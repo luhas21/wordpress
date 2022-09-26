@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+
+    mysql:
+        image: mysql:8.0
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: eliska
+            MYSQL_DATABASE: speelnet
+            MYSQL_USER: speelnet
+            MYSQL_PASSWORD: vrw5-asr/cv5fds6+
+        volumes:
+            - mysql_data:/var/lib/mysql
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        depends_on:
+            - mysql
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        restart: always
+        ports:
+            - 8183:80
+
+    wordpress:
+        depends_on:
+            - mysql
+        image: wordpress:latest
+        ports:
+            - "8020:80"
+        restart: always
+        environment:
+            WORDPRESS_DB_HOST: mysql:3306
+            WORDPRESS_DB_USER: speelnet
+            WORDPRESS_DB_PASSWORD: vrw5-asr/cv5fds6+
+            WORDPRESS_DB_NAME: speelnet
+        volumes:
+            - ./wordpress:/var/www/html
+            - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+
+volumes:
+    mysql_data:
